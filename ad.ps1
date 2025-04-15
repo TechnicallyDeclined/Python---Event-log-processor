@@ -2,7 +2,6 @@ $startDate = (Get-Date).AddDays(-30)
 $endDate = Get-Date
 
 $eventIdsToMonitor = @(
-    5136, # Directory Service Changes
     4728, # A member was added to a security-enabled global group
     4729, # A member was removed from a security-enabled global group
     4732, # A member was added to a security-enabled local group
@@ -24,29 +23,54 @@ $eventIdsToMonitor = @(
     # Add other relevant Event IDs here for group membership changes
 )
 
-Get-WinEvent -FilterHashTable @{
-    LogName = 'Security'
-    Id = $eventIdsToMonitor
-    StartTime = $startDate
-    EndTime = $endDate
-} | ForEach-Object {
-    $recordData = [xml]$_.ToXml()
-    $eventData = $recordData.Event.EventData
+# Specify the name of the remote domain controller
+$remoteDC = "Remote computer" # Replace with the actual FQDN or NetBIOS name
 
-    $subjectAccount = if ($eventData.SubjectUserName) {$eventData.SubjectUserName.'#text'} else {$null}
-    $memberSecurityID = if ($eventData.MemberSid) {$eventData.MemberSid.'#text'} else {$null}
-    $memberAccountName = if ($eventData.MemberName) {$eventData.MemberName.'#text'} else {$null}
-    $groupName = if ($eventData.TargetUserName) {$eventData.TargetUserName.'#text'} else {$null}
+# Function to gather events from a computer
+function Get-ADLogEvents {
+    param(
+        [string]$ComputerName
+    )
+    Write-Host "Gathering logs from: $ComputerName"
+    Get-WinEvent -ComputerName $ComputerName -FilterHashTable @{
+        LogName = 'Security'
+        Id = $eventIdsToMonitor
+        StartTime = $startDate
+        EndTime = $endDate
+    } | ForEach-Object {
+        $recordData = [xml]$_.ToXml()
+        $eventData = $recordData.Event.EventData
 
-    [PSCustomObject]@{
-        TimeCreated       = $_.TimeCreated
-        EventID           = $_.Id
-        Message           = $_.Message
-        SubjectAccount    = $subjectAccount
-        MemberSecurityID  = $memberSecurityID
-        MemberAccountName = $memberAccountName
-        GroupName         = $groupName
-        # Diagnostic output - uncomment to see in console
-        #XML = $_.ToXml()
+        $subjectAccount = if ($eventData.SubjectUserName) {$eventData.SubjectUserName.'#text'} else {$null}
+        $memberSecurityID = if ($eventData.MemberSid) {$eventData.MemberSid.'#text'} else {$null}
+        $memberAccountName = if ($eventData.MemberName) {$eventData.MemberName.'#text'} else {$null}
+        $groupName = if ($eventData.TargetUserName) {$eventData.TargetUserName.'#text'} else {$null}
+
+        [PSCustomObject]@{
+            TimeCreated       = $_.TimeCreated
+            EventID           = $_.Id
+            Message           = $_.Message
+            SubjectAccount    = $subjectAccount
+            MemberSecurityID  = $memberSecurityID
+            MemberAccountName = $memberAccountName
+            GroupName         = $groupName
+            SourceComputer    = $ComputerName # Add a column to identify the source
+            # Diagnostic output - uncomment to see in console
+            #XML = $_.ToXml()
+        }
     }
-} | Export-Csv -Path "<Path to save CSV>" -NoTypeInformation
+}
+
+# Gather events from the local computer
+$localEvents = Get-ADLogEvents -ComputerName $env:COMPUTERNAME
+
+# Gather events from the remote domain controller
+$remoteEvents = Get-ADLogEvents -ComputerName $remoteDC
+
+# Combine the events
+$allEvents = $localEvents + $remoteEvents
+
+# Export the combined events to a CSV file
+$allEvents | Export-Csv -Path "<path to export csv>" -NoTypeInformation
+
+Write-Host "Logs gathered from local computer and '$remoteDC' and exported to CSV"
