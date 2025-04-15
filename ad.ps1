@@ -23,6 +23,15 @@ $eventIdsToMonitor = @(
     # Add other relevant Event IDs here for group membership changes
 )
 
+# Check if script is running with elevated privileges
+if (-not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator))
+{
+    Write-Host "This script requires elevated privileges. Please run as Administrator."
+    $arguments = "-File `"$PSCommandpath`""
+    Start-Process PowerShell -Verb RunAs -ArgumentList $arguments
+    exit 
+}
+
 # Specify the name of the remote domain controller
 $remoteDC = "Remote computer" # Replace with the actual FQDN or NetBIOS name
 
