@@ -5,7 +5,7 @@ pd.set_option('display.max_colwidth', None)  # Display full column width
 pd.set_option('display.max_rows', None)     # If you also have many rows
 pd.set_option('display.max_columns', None)  # If you also have many columns
 
-csv_path = "C:/proit/ad_group_membership_changes_last30days.csv"
+csv_path = "<path to csv file>"  # Replace with your CSV file path
 
 def csv_to_dataframe(csv_path):
     try:
@@ -49,7 +49,7 @@ if dataframe is not None:
     # Select and order the desired columns
     readable_df = dataframe[['Timestamp', 'Action', 'User Initiating Change', 'Member Affected', 'Group Affected']]
 
-    readable_df.to_excel("C:/proit/ad_group_membership_changes_last30days_readable.xlsx", index=False)
+    readable_df.to_excel("<path to save excel file>", index=False)
     print("Data successfully processed and saved to Excel.")
 
 

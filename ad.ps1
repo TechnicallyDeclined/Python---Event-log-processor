@@ -49,4 +49,4 @@ Get-WinEvent -FilterHashTable @{
         # Diagnostic output - uncomment to see in console
         #XML = $_.ToXml()
     }
-} | Export-Csv -Path "C:\proit\ad_group_membership_changes_last30days.csv" -NoTypeInformation
+} | Export-Csv -Path "<Path to save CSV>" -NoTypeInformation
