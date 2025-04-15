@@ -4,10 +4,13 @@ import subprocess
 import pandas as pd
 import re
 import datetime
+from PIL import Image, ImageTk
 
 # --- Configuration ---
 powershell_script_path = "<Filepath to PowerShell script>"
 default_excel_output_path = "<Default path to save excel files>"
+# ---- Uncomment if adding logo ---- #
+#logo_filename = "logoimage name"  # Replace with your logo image filename
 
 def run_powershell():
     status_label.config(text="Running PowerShell script...")
@@ -67,7 +70,23 @@ def process_data():
 # --- GUI Setup ---
 window = tk.Tk()
 window.title("AD Log Processor")
+"""
+# --- Load and Resize the Logo ---
+logo_filename = "proit_logo.png"  # Replace with your logo filename
+DESIRED_WIDTH = 60  # Set your desired width
+DESIRED_HEIGHT = 60  # Set your desired height
 
+try:
+    img = Image.open(logo_filename)
+    resized_img = img.resize((DESIRED_WIDTH, DESIRED_HEIGHT), Image.Resampling.LANCZOS) # Use a high-quality resampling filter
+    logo_img = ImageTk.PhotoImage(resized_img)
+    logo_label = tk.Label(window, image=logo_img)
+    logo_label.pack(pady=10)
+except FileNotFoundError:
+    print(f"Error: Logo file '{logo_filename}' not found.")
+except Exception as e:
+    print(f"Error loading or resizing logo: {e}")
+"""
 run_ps_button = tk.Button(window, text="Run PowerShell Script", command=run_powershell)
 run_ps_button.pack(pady=10)
 
