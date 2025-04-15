@@ -38,7 +38,7 @@ Before running these scripts, ensure you have the following:
 
 ## Setup and Usage
 
-1.  **Download the Scripts:** Obtain the PowerShell script (e.g., `Get-ADLogs.ps1`) and the Python script (`main.py`).
+1.  **Download the Scripts:** Obtain the PowerShell script (e.g., `ad.ps1`) and the Python script (`main.py`).
 
 2.  **Configure the PowerShell Script:**
     * Open the PowerShell script in a text editor.
@@ -52,7 +52,7 @@ Before running these scripts, ensure you have the following:
         ```powershell
         .\Get-ADLogs.ps1
         ```
-    * The script will gather logs from the local and remote domain controllers and save them to `C:\ProIT\adlogs.csv`. **Note:** You might need to adjust the output path if you prefer a different location.
+    * The script will gather logs from the local and remote domain controllers and save them to `file path you save csv to`. **Note:** You might need to adjust the output path if you prefer a different location.
 
 4.  **Run the Python Script:**
     * Open a Command Prompt or PowerShell window.
@@ -61,7 +61,7 @@ Before running these scripts, ensure you have the following:
         ```bash
         python main.py
         ```
-    * The Python script will read `adlogs.csv`, process the data, and save the readable output to `C:\proit\ad_group_membership_changes_last30days_readable.xlsx`. **Note:** The output path is defined within the Python script and can be modified there.
+    * The Python script will read `adlogs.csv`, process the data, and save the readable output to `file path to where you want to save the xlsx file to`. **Note:** The output path is defined within the Python script and can be modified there.
 
 ## Running Together (Orchestration)
 
@@ -69,7 +69,7 @@ You can automate the execution of both scripts sequentially using PowerShell:
 
 ```powershell
 # Run the PowerShell script (ensure it's run as administrator)
-Start-Process powershell -ArgumentList "-NoExit -File `"C:\path\to\your\Get-ADLogs.ps1`"" -Verb RunAs
+Start-Process powershell -ArgumentList "-NoExit -File `"C:\path\to\your\ad.ps1`"" -Verb RunAs
 # Wait for a few seconds to ensure the CSV is created (adjust as needed)
 Start-Sleep -Seconds 10
 # Run the Python script
