@@ -50,7 +50,7 @@ Before running these scripts, ensure you have the following:
     * Navigate to the directory where you saved the PowerShell script using the `cd` command.
     * Execute the script:
         ```powershell
-        .\Get-ADLogs.ps1
+        .\ad.ps1
         ```
     * The script will gather logs from the local and remote domain controllers and save them to `file path you save csv to`. **Note:** You might need to adjust the output path if you prefer a different location.
 
